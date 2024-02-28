@@ -1,4 +1,20 @@
+@php
+    use Illuminate\Support\Facades\Log;
+@endphp
 @foreach ($tasks as $task)
+
+    @php
+        $statuses = DB::table('status_history')
+            ->select('status.name as status_name')
+            ->leftJoin('status', 'status_history.id_status', '=', 'status.id_status')
+            ->where('status_history.element_id', '=', $task->id_task)
+           // ->where('status_history.active', '=', 1)
+            ->where('status.element_type', '=', 'task')
+            ->where('status.status_type', '=', 'consultant')
+            ->orderByDesc('status_history.created_at')
+            ->pluck('status_name');
+
+    @endphp
     <tr>
         <td class="min-w-175px">
             <div class="d-flex align-items-center">
@@ -103,7 +119,8 @@
             </span>
         </td>
         <td>
-            <input id="row-checkbox-{{ $task->id_task }}" type="checkbox" name="status" value="22" @if($task->status_c === 'referees_filed') checked @endif disabled/>
+            <input id="row-checkbox-{{ $task->id_task }}" type="checkbox" name="status" value="22" @if(in_array('referees_filed', $statuses->toArray()))
+             checked @endif disabled/>
             <label for="checkbox"></label>
         </td>
         <td>

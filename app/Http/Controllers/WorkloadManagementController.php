@@ -117,8 +117,7 @@ class WorkloadManagementController extends Controller
             'active'=>true,
             'created_by'=>Auth::user()->id_user
         ]);
-
-
+        
         //Prepares object to retunr data to client
         $task['id_task'] = $statusNew->element_id;
         $task['status_c'] = $statusNew->status->name;
