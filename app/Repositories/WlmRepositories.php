@@ -313,7 +313,7 @@ class WlmRepositories
                 WlmRepositories::applyFilter($query);
 
                 return $query;
-            })
+            })  
             /**dealine year */
             ->when(true, function ($query) use ($filters) {
                 $query->whereYear('task.deadline', $filters->deadline ?? 2023)->where('task.deleted', 0)->where('task.deleted', 0);
@@ -344,7 +344,7 @@ class WlmRepositories
             })
             ->orderByRaw('LEFT(client_name, 1) asc');
 
-
+        
         $objs = DB::table(DB::raw("({$subQuery->toSql()}) as sub"))
             ->mergeBindings($subQuery)
             ->when($filters->ids_status, function ($query, $ids_status) {
@@ -371,7 +371,7 @@ class WlmRepositories
         if(!isset($filters->from)){
             $tasks['tasksGraph'] = $objs->get();
         }
-
+       
         $tasks['tasks'] = $objs->paginate(10);
 
         return $tasks;
@@ -635,7 +635,7 @@ class WlmRepositories
                 WlmRepositories::applyFilter($query);
 
                 return $query;
-            })
+            })  
             ->when(true, function ($query) use ($filters) {
                 $query->whereYear('task.deadline', $filters->deadline ?? 2023)->where('task.deleted', 0)->where('task.deleted', 0);
 
@@ -672,7 +672,7 @@ class WlmRepositories
                 if($sortBy == 'agreed_deadline'){
                     return $query->orderBy('task.agreed_deadline', $filters->order);
                 }
-
+                
             })
             ->when(!$isAdmin, function ($query) use ($filters){
                 $idUser = Auth::user()->id_user;
@@ -738,7 +738,7 @@ class WlmRepositories
     public static function getYearsOfProjects()
     {
         $years = Project::where('deleted', 0)->pluck('year')->unique()->sort();
-
+        
         return $years;
     }
 
@@ -838,7 +838,7 @@ class WlmRepositories
             ->get();
 
         return $result;
-
+        
     }
 
     public static function setDeadlineStatus($task)
@@ -1155,7 +1155,7 @@ class WlmRepositories
                 WlmRepositories::applyFilter($query);
 
                 return $query;
-            })
+            })  
             ->when(true, function ($query) use ($filters) {
                 $query->whereYear('task.deadline', $filters->deadline ?? 2023)->where('task.deleted', 0)->where('task.deleted', 0);
 

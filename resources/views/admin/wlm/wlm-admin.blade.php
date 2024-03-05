@@ -69,48 +69,6 @@
 
         </style>
 
-<style>
-    input {
-    padding: 0;
-    height: initial;
-    width: initial;
-    margin-bottom: 0;
-    display: none;
-    cursor: pointer;
-    }
-
-    label {
-    position: relative;
-    cursor: pointer;
-    }
-
-    label:before {
-    content:'';
-    -webkit-appearance: none;
-    background-color: transparent;
-    border: 2px solid #0079bf;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
-    padding: 10px;
-    display: inline-block;
-    position: relative;
-    vertical-align: middle;
-    cursor: pointer;
-    margin-right: 5px;
-    }
-    input:checked + label:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 2px;
-    left: 9px;
-    width: 6px;
-    height: 14px;
-    border: solid #0079bf;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    }
-
-</style>
 @endpush
 
 @section('master-content')
@@ -286,8 +244,8 @@
 
             <div class="card-toolbar">
                 <span>
-                     Submissions
-                    <span id="total-tasks" style="" > {{ $tasks->total() }}</span>
+                    Submissions
+                    <span id="total-tasks" style="">{{ $tasks->total() }}</span>
                 </span>
                 &nbsp; &nbsp;
                 <a href="#" onclick="exportToExcel(); return false;" id="export-task" class="btn btn-sm btn-primary update-tasks">
@@ -320,18 +278,18 @@
                     <thead id="tasks-header">
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                             <th class="min-w-125px">Info</th>
-                            <th class="min-w-125px">Details</th>
-                            <th class="min-w-125px">
+                            <th class="">Details</th>
+                            <th class="">
                                 <a href="#" onclick="sortBy('agreed_deadline'); return false;">
                                     Agreed Deadline
                                 </a>
                                 <span id="sort-agreed_deadline"></span>
                             </th>
-                            <th class="min-w-135px">
+                            <th class="">
                                 <a href="#" onclick="sortBy('deadline'); return false;">
                                     Directory Deadline
                                 </a>
-                                <span id="sort-deadline"></span>
+                                <span id="sort-deadline"><i class="las la-angle-up"></i></span>
                             </th>
                             <th class="min-w-125px">
                                 <a href="#" onclick="sortBy('owner'); return false;">
@@ -369,10 +327,8 @@
                                 </a>
                                 <span id="sort-consultantStatus"></span>
                             </th>
-                            <th class="min-w-90px">
-                                Ref filed
-                            </th>
-                            <th class="min-w-125px">Description</th>
+                            <th class="min-w-125px">Ref Filed</th>
+                            <th class="">Description</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-semibold" id="items-tasks">

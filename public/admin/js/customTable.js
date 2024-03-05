@@ -88,6 +88,20 @@ function renderizarTabla() {
                     </a>
                 </span>
             </td>
+            <td>
+                <input id="row-checkbox-${task.id_task}" type="checkbox" name="status" value="22" ${statuses.includes('referees_filed') ? 'checked' : ''} disabled/>
+                <label for="checkbox"></label>
+            </td>
+            <td>
+                <div class="cbox" id="row-description-${task.id_task}" task-id="${task.id_task}" task-status="${task.status_c ? task.status_c : 'NEW'}" task-description="${task.status_description}">
+                    <span class="cedit">edit</span>
+                    <span class="csave">save</span>
+                    <span class="ccancel">cancel</span>
+                    <div class="ctext" style="font-size:12px; border-radius: 5px; border:1px dashed #DFDFDF; height:90px; width:180px; overflow-y: scroll;">
+                    ${task.status_description}
+                    </div>
+                </div>
+            </td>
         `;
 
         cuerpoTabla.appendChild(fila);

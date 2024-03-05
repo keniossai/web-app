@@ -15,6 +15,7 @@ use App\Models\Status;
 use App\Models\StatusHistory;
 use App\Models\Task;
 use App\Models\Taxonomy;
+use App\Models\User;
 use App\Repositories\ContactsRepositories;
 use App\Repositories\DirectoriesRepositories;
 use App\Repositories\GuidesRepositories;
@@ -80,8 +81,8 @@ class ProjectController extends Controller
         return view('admin.projects')->with(['projects' => $projects]);
     }
 
-    public function create()
-    {
+    public function create(){
+
         return view('admin.project')->with([
             'view' => 'create',
         ]);
@@ -194,7 +195,6 @@ class ProjectController extends Controller
 
     public function save(Request $request)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => [
                 'required',
@@ -237,7 +237,7 @@ class ProjectController extends Controller
         }
     }
 
-
+    /**This function stores all subs on a project */
     public function saveUpdateSubmissions(Request $request)
     {
         if(isset($request->filteredData) && count($request->filteredData)>0)
@@ -254,19 +254,22 @@ class ProjectController extends Controller
                 $task->id_practice = $submission['id_practice'];
                 $task->deadline = isset($submission['deadline']) ? $submission['deadline'] : null;
                 $task->agreed_deadline = isset($submission['agreed_deadline']) ? $submission['agreed_deadline'] : null;
+                $task->confirmed = $submission['confirmed']? $submission['confirmed'] : 0;
                 $task->created_by = Auth::user()->id_user;
                 // $task->confirmed = isset($submission['confirmed']) ? $submission['confirmed'] : 0;
-
+                //Store this for later use when saving statuses
                 $exists = $task->exists;
 
                 $task->exists ? $task->update() : $task->save();
 
                 if(isset($submission['ids_contact'])){
+                    //Getting all contact relationships different from the ones we are getting
                     $getContactsRel = ContactRel::where([
                         'element_id' => $task->id_task,
                         'type_rel' => 'marketing_business_development',
                         'type_element' => 'task'
                         ])->whereNotIn('id_contact',$submission['ids_contact'])->get();
+                    //Delete not reciebed relationships
                     foreach($getContactsRel as $contactRelDel)
                     {
                         $contactRelDel->update([
@@ -285,21 +288,22 @@ class ProjectController extends Controller
                         $contactRel->exists ? $contactRel->update() : $contactRel->save();
                     }
                 }
-
+                
                 if(isset($submission['id_status'])){
+                    //Here we find if the new status is different from the old one.
                     $statusH = StatusHistory::where([
-                        'element_id' => $task->id_task,
+                        'element_id' => $task->id_task, 
                         'active' => true
                         ])->where('id_status', '<>', $submission['id_status'])->get();
 
-                    // The previous returns a value, it means that the new status is different
+                    //If the previous query return a value, it means that the new status is different. so we deactivate the old one
                     foreach($statusH as $status){
                         $status->update([
                             'active' => false
                         ]);
                     }
 
-                    //This finds a record to update or create a new one
+                    //tries to find the record to update it or creates a new one.
                     $statusNew = StatusHistory::firstOrNew([
                         'id_status' => $submission['id_status'],
                         'element_id' => $task->id_task
@@ -307,19 +311,21 @@ class ProjectController extends Controller
                     $statusNew->description = $submission['description'];
                     $statusNew->active = true;
                     $statusNew->exists ? $statusNew->update() : $statusNew->save();
-
+                    
                 }
 
-                // Added creation of a new status
+                /**@CHANGED: added creation of new NEW status */
                 if(!$exists){
                     $statusNew = StatusHistory::firstOrNew([
                         'id_status' => 28,
                         'element_id' => $task->id_task
                     ]);
-                    $statusNew->description = 'Added to a projects';
+                    $statusNew->description = 'Added to project';
                     $statusNew->active = true;
                     $statusNew->exists ? $statusNew->update() : $statusNew->save();
                 }
+
+
             }
         }
          //delete
@@ -361,8 +367,6 @@ class ProjectController extends Controller
 
         return response($response);
     }
-
-
 
     public function getGuidesFromTaxonomy(Request $request)
     {
@@ -494,8 +498,8 @@ class ProjectController extends Controller
         return response('success');
     }
 
-    public function getDealineDirectory(Request $request)
-    {
+    /**@CHANGED:  */
+    public function getDealineDirectory(Request $request){
         $deadline = DB::table('deadline')
             ->Join('deadline_header', function ($join) {
                 $join->on('deadline.id_deadline_header', '=', 'deadline_header.id_deadline_header');
@@ -505,10 +509,10 @@ class ProjectController extends Controller
             ->where('deadline.id_location', $request->id_location)
             ->where('deadline.id_practice', $request->id_practice)
             ->where('deadline_header.year', $request->year)
-            ->where('deadline.confirmed', 1)
+           //->where('deadline.confirmed', 1)
             ->whereNotNull('deadline.deadline')
             ->where('deadline.deleted', 0)
-            ->select('deadline.deadline')
+            ->select('deadline.deadline','deadline.confirmed')
             ->get();
 
         return response($deadline);
@@ -553,7 +557,7 @@ class ProjectController extends Controller
     {
         $project = ProjectRepositories::getProject($request->id_project);
         $currentProject = ProjectRepositories::getProject($request->id_project_current);
-        $status  = Status::where(['element_type' => 'task', 'status_type' => 'consultant', 'deleted' => 0, 'name' => 'forecasted'])->first();
+        $status  = Status::where(['element_type' => 'task', 'status_type' => 'client', 'deleted' => 0, 'name' => 'forecasted'])->first();
         $tasks = Task::where(['id_project' => $project->id_project, 'deleted' => 0])->get()->map(function($task) use ($currentProject, $status){
             $task['action'] = "insert";
             $task['id_project'] = $currentProject->id_project;

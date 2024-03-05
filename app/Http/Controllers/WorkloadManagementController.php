@@ -45,12 +45,10 @@ class WorkloadManagementController extends Controller
     public function index(Request $request)
     {
 
-
         $request->flash();
         /**
          * 1. Here we set all default filters
          */
-
         if(!$request->deadline){
             $obj =  Carbon::now()->format('Y');
             $request->request->add(['deadline' => $obj]);
@@ -70,7 +68,6 @@ class WorkloadManagementController extends Controller
             $result = WlmRepositories::getTasksWlm($request);
             $view = view('admin.items', ['tasks' => $result['tasks']])->render();
             $pagination =  $result['tasks']->links()->toHtml();
-
 
             return response()->json([
                 'items'=>$result,
@@ -117,7 +114,7 @@ class WorkloadManagementController extends Controller
             'active'=>true,
             'created_by'=>Auth::user()->id_user
         ]);
-        
+
         //Prepares object to retunr data to client
         $task['id_task'] = $statusNew->element_id;
         $task['status_c'] = $statusNew->status->name;
@@ -212,5 +209,3 @@ class WorkloadManagementController extends Controller
     }
 
 }
-
-

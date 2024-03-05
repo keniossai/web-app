@@ -121,7 +121,6 @@
                 <div class="card-body pt-2">
                     <div class="py-2">
                         <div class="rounded border p-5">
-                            {{-- Add task form (submission) --}}
                             <form class="form pt-2" action="#" id="submission-form">
                                 <input id="id_product" value="{{ $project->id_product }}" hidden>
                                 <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-4">
@@ -483,7 +482,10 @@
                     itemTemplate: function (value) {
                         if(value){
                             if (value.toLowerCase().indexOf("Date") == -1) {
-                                return moment(new Date(value).toISOString()).format('DD/MM/YYYY');
+                                var test = moment.utc(value, 'YYYY/MM/DD');
+                                //this transformation is moving the days
+                                //return moment(new Date(value).toISOString()).format('YYYY-MM-DD');
+                                return test.format('DD/MM/YYYY');
                             } else {
                                 value = new Date(parseInt(value.substr(6)));
                                 dt = new Date(value);//.toDateString();
@@ -503,10 +505,14 @@
                     insertTemplate: function(value) {
                         return this._insertPicker = $("<input>").datepicker({ defaultDate: new Date() });
                     },
+                    /**@CHANGE: Changed date formatting to avoid susbstraction of dates. */
                     editTemplate: function(value) {
                         let date = value;
                         if(value){
-                            date = moment(new Date(value).toISOString()).format('DD/MM/YYYY');
+                            var test = moment.utc(value, 'YYYY/MM/DD');
+                                //this transformation is moving the days
+                                //return moment(new Date(value).toISOString()).format('DD/MM/YYYY');
+                            date = test.format('DD/MM/YYYY');
                         }
 
                         return this._editPicker = $("<input>").datepicker({ dateFormat: 'dd/mm/yy'}).datepicker("setDate", date);
@@ -682,7 +688,7 @@
                                 var id_guide = this._grid.fields[4].editControl[0].value;
                                 var id_location = this._grid.fields[5].editControl[0].value;
                                 var grid = this._grid;
-
+                                //this function is called everytime the practices gets changes on edit mode.
                                 var changePractice = function() {
                                     id_practice = $editControl.val();
                                     if(id_practice){
@@ -706,9 +712,10 @@
                                                 }
 
                                                 var date;
-                                                if(deadline)
-                                                {
-                                                    date = moment(new Date(deadline).toISOString()).format('DD/MM/YYYY');
+                                                //updates deadline of the practice if changes, if its not changes it updates it anyways.
+                                                if(deadline){
+                                                    var test = moment.utc(deadline, 'YYYY/MM/DD');
+                                                    date = test.format('DD/MM/YYYY');
                                                 }
                                                 var $datepicker = grid.option("fields")[8]._editPicker;
                                                 $datepicker.datepicker();
@@ -1102,16 +1109,17 @@
             }
         }
 
-        function insertItemSubmission()
-        {
+        /**adds a new record to the javascript table below */
+        function insertItemSubmission(){
+            //if it is view mode only or edit mode
             @if (isset($isView) && $isView == false)
-                if($('#id_directory_select').val() && $('#id_guide_select').val() && $('#id_location_select').val() && $('#id_practice_select').val())
-                {
+                //validate for some reason if all filters hace data selected.
+                if($('#id_directory_select').val() && $('#id_guide_select').val() && $('#id_location_select').val() && $('#id_practice_select').val()){
+                    //gets ID of the default "pending" status from global status array
                     let statusTask = statusesClient.filter(function(status){
                         return (status.name == 'Pending');
                     })[0];
-
-
+                    //retrieve dealine from deadline package if any.
                     $.ajax({
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                         method: 'post',
@@ -1126,8 +1134,10 @@
                         url: "{{ route('get-dealine-directory') }}",
                         success:function(response){
                             var deadline = "";
+                            var confirmed = 0;
                             if(response.length>0){
-                                var deadline = response[0].deadline;
+                                deadline = response[0].deadline;
+                                confirmed = response[0].confirmed;
                             }
 
                             $("#submission").jsGrid("insertItem", {
@@ -1141,6 +1151,7 @@
                                 name: $('#project_name').val(),
                                 deadline: deadline,
                                 agreed_deadline: deadline,
+                                confirmed:confirmed,
                                 id_status: statusTask.id_status,
                                 description: 'Status default when insert record',
                                 action: 'insert'

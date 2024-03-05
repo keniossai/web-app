@@ -1,17 +1,15 @@
 @foreach ($tasks as $task)
-
-    @php
-        $statuses = DB::table('status_history')
-            ->select('status.name as status_name')
-            ->leftJoin('status', 'status_history.id_status', '=', 'status.id_status')
-            ->where('status_history.element_id', '=', $task->id_task)
-           // ->where('status_history.active', '=', 1)
-            ->where('status.element_type', '=', 'task')
-            ->where('status.status_type', '=', 'consultant')
-            ->orderByDesc('status_history.created_at')
-            ->pluck('status_name');
-
-    @endphp
+@php
+$statuses = DB::table('status_history')
+    ->select('status.name as status_name')
+    ->leftJoin('status', 'status_history.id_status', '=', 'status.id_status')
+    ->where('status_history.element_id', '=', $task->id_task)
+// ->where('status_history.active', '=', 1)
+    ->where('status.element_type', '=', 'task')
+    ->where('status.status_type', '=', 'consultant')
+    ->orderByDesc('status_history.created_at')
+    ->pluck('status_name');
+@endphp
     <tr>
         <td class="min-w-175px">
             <div class="d-flex align-items-center">
@@ -53,7 +51,7 @@
                         @php
                             $agreedDate = new DateTime($task->agreed_deadline, new DateTimeZone(Auth::user()->timezone ?? 'UTC'));
                         @endphp
-                        {{ $agreedDate->format('d/m/Y') }}
+                        {{ $agreedDate->format('d/m/Y'); }}
                     @endif
                 </div>
             </div>
@@ -69,7 +67,7 @@
                         @php
                             $date = new DateTime($task->deadline, new DateTimeZone(Auth::user()->timezone ?? 'UTC'));
                         @endphp
-                        {{ $date->format('d/m/Y') }}
+                        {{ $date->format('d/m/Y'); }}
                     @endif
                 </div>
             </div>
@@ -116,9 +114,9 @@
             </span>
         </td>
         <td>
-            <input id="row-checkbox-{{ $task->id_task }}" type="checkbox" name="status" value="22" @if(in_array('referees_filed', $statuses->toArray()))
-             checked @endif disabled/>
-            <label for="checkbox"></label>
+            <input class="form-check-input me-3" id="row-checkbox-{{ $task->id_task }}" type="checkbox" name="status" value="22" @if(in_array('referees_filed', $statuses->toArray()))
+             checked @endif style="background-size: 60% 60% !important; border-color: #009ef7;" disabled/>
+            <label for="checkbox" class="form-check-custom form-check-solid align-items-start"></label>
         </td>
         <td>
             <div class="cbox" id="row-description-{{$task->id_task}}" task-id="{{$task->id_task}}" task-status="{{ $task->status_c ? $task->status_c : 'NEW'}}" task-description="{{ $task->status_description }}">
@@ -126,11 +124,9 @@
                 <span class="csave">save</span>
                 <span class="ccancel">cancel</span>
                 <div class="ctext" style="font-size:12px; border-radius: 5px; border:1px dashed #DFDFDF; height:90px; width:180px; overflow-y: scroll;">
-                {{ $task->status_description }}
+                    {{ $task->status_description }}
                 </div>
             </div>
-
-
         </td>
     </tr>
 @endforeach
