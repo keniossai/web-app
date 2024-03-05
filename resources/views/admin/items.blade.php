@@ -1,6 +1,3 @@
-@php
-    use Illuminate\Support\Facades\Log;
-@endphp
 @foreach ($tasks as $task)
 
     @php
