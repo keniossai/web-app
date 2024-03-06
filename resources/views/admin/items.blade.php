@@ -2,7 +2,6 @@
     use Illuminate\Support\Facades\Log;
 @endphp
 @foreach ($tasks as $task)
-
     @php
         $statuses = DB::table('status_history')
             ->select('status.name as status_name')

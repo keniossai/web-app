@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
+
 class WorkloadManagementController extends Controller
 {
     public function __construct()
@@ -45,32 +46,30 @@ class WorkloadManagementController extends Controller
     public function index(Request $request)
     {
 
-
         $request->flash();
         /**
          * 1. Here we set all default filters
          */
-
         if(!$request->deadline){
             $obj =  Carbon::now()->format('Y');
             $request->request->add(['deadline' => $obj]);
         }
-        if(!$request->ids_status){
+
+        if($request->ids_status === NULL){
             $obj = "confirmed,forecasted,pending";
             $request->request->add(['ids_status' => $obj]);
         }
+
         //deadline year
         if(!$request->sortBy == "deadline"){
             $request->request->add(['sortBy' => 'deadline', 'order' => 'ASC']);
         }
-
-        //This function is called via ajax to retrieve paginated results
         if ($request->ajax()) {
             $request->request->add(['from' => true]);
             $result = WlmRepositories::getTasksWlm($request);
-            $view = view('admin.items', ['tasks' => $result['tasks']])->render();
-            $pagination =  $result['tasks']->links()->toHtml();
 
+            $view = view('admin.items', ['tasks' => $result['tasks'],'totalTask' => $result['tasks']->total()])->render();
+            $pagination =  $result['tasks']->links()->toHtml();
 
             return response()->json([
                 'items'=>$result,
@@ -85,6 +84,7 @@ class WorkloadManagementController extends Controller
 
         return view('admin.wlm.wlm-admin')->with([
             'tasks' => $tasks,
+            'totalTask' => $result['tasks']->total(),
             "allLocations" => Location::get(["name", "id_location"])
                 ->map(fn ($location) => ["name" => $location->name, "location_id" => $location->id_location])
                 ->toArray(),
@@ -117,7 +117,7 @@ class WorkloadManagementController extends Controller
             'active'=>true,
             'created_by'=>Auth::user()->id_user
         ]);
-        
+
         //Prepares object to retunr data to client
         $task['id_task'] = $statusNew->element_id;
         $task['status_c'] = $statusNew->status->name;

@@ -746,7 +746,8 @@ class WlmRepositories
     {
         $years = SubmissionsRepositories::getTasksForAllocation()->pluck('deadline')->map(function($date){
             return Carbon::parse($date)->year;
-        })->unique();
+        })->unique()
+        ->sort();
         return $years;
     }
 

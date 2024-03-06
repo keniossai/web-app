@@ -287,7 +287,7 @@
             <div class="card-toolbar">
                 <span>
                      Submissions
-                    <span id="total-tasks" style="" > {{ $tasks->total() }}</span>
+                    <span id="total-tasksg" style=""> {{ $totalTask }} </span>
                 </span>
                 &nbsp; &nbsp;
                 <a href="#" onclick="exportToExcel(); return false;" id="export-task" class="btn btn-sm btn-primary update-tasks">
