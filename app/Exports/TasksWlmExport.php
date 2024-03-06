@@ -14,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 class TasksWlmExport implements FromCollection, WithHeadings, WithMapping, WithColumnWidths,WithColumnFormatting, WithStyles
 {
     protected $data;
-    protected $columns = ['id_task', 'project_name', 'client_name', 'status_client', 'product_type', 'practice_name', 'location_name', 'guide_name', 'directory_name', 'agreed_deadline', 'deadline', 'owner_name', 'sc_name', 'consultant_name', 'lds_name', 'coord_name', 'status_c'];
+    protected $columns = ['id_task', 'project_name', 'client_name', 'status_client', 'product_type', 'practice_name', 'location_name', 'guide_name', 'directory_name', 'agreed_deadline', 'deadline', 'owner_name', 'sc_name', 'consultant_name', 'lds_name', 'coord_name', 'status_c', 'Ref Filed',];
     protected $columnWidths = [
         'A' => 10,
         'B' => 20,
@@ -65,6 +65,7 @@ class TasksWlmExport implements FromCollection, WithHeadings, WithMapping, WithC
             'LDS',
             'Coordinator',
             'Consultant Status',
+            'Ref Filed',
         ];
     }
 

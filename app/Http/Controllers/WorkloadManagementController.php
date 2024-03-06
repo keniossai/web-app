@@ -32,7 +32,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
-
 class WorkloadManagementController extends Controller
 {
     public function __construct()
@@ -212,5 +211,3 @@ class WorkloadManagementController extends Controller
     }
 
 }
-
-

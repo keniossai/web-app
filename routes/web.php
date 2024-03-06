@@ -67,7 +67,6 @@ Route::group(['middleware' => ['permission.verifier']], function () {
     Route::get('projects', [ProjectController::class, 'index'])->name('projects');
     Route::get('project/create', [ProjectController::class, 'create'])->name('create-project');
     Route::post('save-project', [ProjectController::class, 'save'])->name('save-project');
-
     Route::get('project/{view}/{id}', [ProjectController::class, 'read'])->name('edit-project');
     Route::get('project/edit/{view}/{id}/{ids_extern?}', [ProjectController::class, 'read'])->name('read-project');
     Route::get('project/view/{view}/{id}', [ProjectController::class, 'view'])->name('view-project');

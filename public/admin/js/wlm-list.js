@@ -594,13 +594,13 @@ function updateStatusC() {
             $("#row-description-" + id_task).attr('task-status', response.data.status_c);
             $("#row-description-" + id_task).attr('task-description', response.data.status_description);
             $("#row-description-" + id_task + ' .ctext').text(response.data.status_description);
-
             // This update input checkbox
             if (response.data.status_c === 'referees_filed') {
                 $(`#row-checkbox-${id_task}`).prop('checked', true);
             } else {
                 $(`#row-checkbox-${id_task}`).prop('checked', false);
             }
+            location.reload();
             toastr.success('Status updated successfully');
         },
         error: function (xhr) {
